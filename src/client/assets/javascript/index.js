@@ -78,24 +78,28 @@ async function handleCreateRace() {
 	const player = store.player_id;
 	const track = store.track_id;
 	console.log(track)
-	
-	// TODO - invoke the API call to create the race, then save the result
-	const race = await createRace(player, track)
-	console.log(race)
-	
-	// TODO - update the store with the race id
-	store.race_id = parseInt(race.ID) - 1
-	// render starting UI
-	console.log(race.Track)
-	renderAt('#race', renderRaceStartView(race.Track, player))
 
-	// The race has been created, now start the countdown
-	// TODO - call the async function runCountdown
-	await runCountdown()
-	// TODO - call the async function startRace
-	await startRace(store.race_id)
-	// TODO - call the async function runRace
-	await runRace(store.race_id)
+	if(!player || !track) {
+		alert("Please, select your preferred Track and Racer to launch the race.")
+	} else {
+		// TODO - invoke the API call to create the race, then save the result
+		const race = await createRace(player, track)
+		console.log(race)
+		
+		// TODO - update the store with the race id
+		store.race_id = parseInt(race.ID) - 1
+		// render starting UI
+		console.log(race.Track)
+		renderAt('#race', renderRaceStartView(race.Track, player))
+	
+		// The race has been created, now start the countdown
+		// TODO - call the async function runCountdown
+		await runCountdown()
+		// TODO - call the async function startRace
+		await startRace(store.race_id)
+		// TODO - call the async function runRace
+		await runRace(store.race_id)
+	}
 }
 
 function runRace(raceID) {
@@ -407,4 +411,23 @@ function accelerate(id) {
 	})
 	//.then(response => response.json())
 	.catch(error => console.log("Problem with accelerate request::",error))
+}
+
+//F1 Track Names
+const f1Tracks = {
+	"Track 1": "Catalunya",
+	"Track 2": "Silverstone",
+	"Track 3": "Monza",
+	"Track 4": "Algarve",
+	"Track 5": "Yas Marina",
+	"Track 6": "Nürburgring"
+}
+
+//F1 Drivers
+const f1Drivers = {
+	"Racer 1": "Fernando Alonso",
+	"Racer 2": "Mark Webber",
+	"Racer 3": "Jenson Button",
+	"Racer 4": "Felipe Massa",
+	"Racer 5": "Kamui Kobayashi"
 }
