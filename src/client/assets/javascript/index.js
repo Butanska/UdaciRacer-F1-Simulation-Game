@@ -78,27 +78,30 @@ async function handleCreateRace() {
 	const player = store.player_id;
 	const track = store.track_id;
 	console.log(track)
-
-	if(!player || !track) {
-		alert("Please, select your preferred Track and Racer to launch the race.")
-	} else {
-		// TODO - invoke the API call to create the race, then save the result
-		const race = await createRace(player, track)
-		console.log(race)
+	try {
+		if(!player || !track) {
+			alert("Please, select your preferred Track and Racer to launch the race.")
+		} else {
+			// TODO - invoke the API call to create the race, then save the result
+			const race = await createRace(player, track)
+			console.log(race)
+			
+			// TODO - update the store with the race id
+			store.race_id = parseInt(race.ID) - 1
+			// render starting UI
+			console.log(race.Track)
+			renderAt('#race', renderRaceStartView(race.Track, race.Cars))
 		
-		// TODO - update the store with the race id
-		store.race_id = parseInt(race.ID) - 1
-		// render starting UI
-		console.log(race.Track)
-		renderAt('#race', renderRaceStartView(race.Track, player))
-	
-		// The race has been created, now start the countdown
-		// TODO - call the async function runCountdown
-		await runCountdown()
-		// TODO - call the async function startRace
-		await startRace(store.race_id)
-		// TODO - call the async function runRace
-		await runRace(store.race_id)
+			// The race has been created, now start the countdown
+			// TODO - call the async function runCountdown
+			await runCountdown()
+			// TODO - call the async function startRace
+			await startRace(store.race_id)
+			// TODO - call the async function runRace
+			await runRace(store.race_id)
+		}
+	} catch (error) {
+		console.log(error)
 	}
 }
 
@@ -112,7 +115,7 @@ function runRace(raceID) {
 		*/
 		getRace(raceID)
 		.then(raceData => {
-			console.log(raceData)
+			//console.log(raceData)
 			if(raceData.status === 'in-progress') {
 				renderAt('#leaderBoard', raceProgress(raceData.positions))
 			} else if (raceData.status === 'finished') {
@@ -152,6 +155,7 @@ async function runCountdown() {
 			}
 			const countdown = setInterval(myTimer, 1000);
 		})
+		.catch (error => console.log(error))
 	} catch(error) {
 		console.log(error);
 	}
@@ -305,7 +309,7 @@ function resultsView(positions) {
 }
 
 function raceProgress(positions) {
-	let userPlayer = positions.find(e => e.id === store.player_id)
+	const userPlayer = positions.find(e => e.id === store.player_id)
 	userPlayer.driver_name += " (you)"
 
 	positions = positions.sort((a, b) => (a.segment > b.segment) ? -1 : 1)
